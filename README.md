@@ -1,6 +1,27 @@
 # Credit Barbell Strategy
 
-크레딧 바벨 전략 백테스트와 VIX 필터 확장 버전을 정리한 저장소입니다. 이 저장소는 `regime-detection`과 분리된 별도 공유용 저장소이며, GitHub에는 최종 노트북과 핵심 결과물만 깔끔하게 올리는 것을 기준으로 구성했습니다.
+This repository contains the final research notebook and output files for a credit barbell allocation strategy with an additional VIX-based risk filter. It is intended to be a clean presentation repository: the final notebook and core deliverables are tracked, while draft notebooks and reference materials are kept out of the GitHub-facing structure.
+
+## Overview
+
+The strategy is built around a barbell framework that combines credit exposure with defensive fixed income exposure. The allocation logic uses macro and credit signals to classify market conditions and then applies a VIX overlay to reduce risk during periods of sharp volatility stress.
+
+In practical terms, the framework is designed to answer three questions:
+
+1. When should the portfolio lean into credit risk?
+2. When should it shift toward safer duration-oriented assets?
+3. When should an explicit volatility signal force a more defensive posture?
+
+## Strategy Logic
+
+The notebook implements a regime-aware allocation process with the following ideas:
+
+- A barbell structure that balances risk assets and defensive bond exposure
+- Credit and macro indicators used as state variables for regime identification
+- A VIX-based filter that acts as an additional stress signal
+- Backtest validation through cumulative performance, regime transitions, and monthly attribution outputs
+
+The VIX extension is especially important because it adds a fast market-based signal on top of slower macro or spread-based indicators. This helps the framework respond more conservatively during abrupt market dislocations.
 
 ## Repository Structure
 
@@ -15,25 +36,16 @@
 └── .gitignore
 ```
 
+### Key Files
+
 - `credit-barbell-strategy.ipynb`
-  최종 분석 노트북
+  Final notebook containing the full workflow, from data loading and signal construction to backtest evaluation and output generation.
 - `data/`
-  원천 데이터 또는 중간 가공 데이터를 두는 위치
+  Placeholder directory for raw or intermediate datasets if local data snapshots are added later.
 - `results/figures/`
-  전략 성과와 레짐 변화 시각화
+  Exported charts used to summarize strategy behavior and performance.
 - `results/reports/`
-  백테스트 요약, 월별 상세 성과표, 레짐별 성과표
-
-## Strategy Summary
-
-이 전략은 크레딧 자산과 안전자산을 함께 운용하는 바벨 구조를 기본으로 합니다. 매크로 및 신용 스프레드 신호를 바탕으로 시장 국면을 나누고, VIX를 추가 필터로 활용해 급격한 위험 확대 구간에서 방어적으로 대응하는 것이 핵심입니다.
-
-주요 구성 요소:
-
-- 크레딧 노출과 안전자산 노출의 바벨 구조
-- 신용 및 매크로 기반 레짐 분류
-- VIX 기반 추가 위험 제어
-- 월별 성과, 누적 성과, 레짐별 비중 변화 검증
+  Spreadsheet outputs containing summary statistics, regime-level results, and monthly detail tables.
 
 ## Main Outputs
 
@@ -49,18 +61,27 @@
 
 ![VIX Signal Comparison](results/figures/signal_comparison_vix.png)
 
-## Result Files
+## Report Files
 
 - `results/reports/strategy_VIX_TLT_mix_report.xlsx`
-  전략 성과 요약 리포트
+  Summary report for the VIX-enhanced strategy and allocation mix.
 - `results/reports/strategy_monthly_details.xlsx`
-  월별 수익률 및 상세 결과
+  Monthly return history and supporting detailed output.
 - `results/reports/barbell전략_레짐별 비중과 성과_SAA.xlsx`
-  레짐별 자산 비중과 성과 정리
+  Regime-level portfolio weights and performance breakdown.
 
-## Data And Dependencies
+## Data Sources
 
-노트북 실행 시 사용하는 주요 패키지:
+The notebook relies on a combination of market and macroeconomic data. Based on the implementation, the main external inputs are:
+
+- `yfinance` for ETF prices and VIX data
+- `fredapi` for macroeconomic and credit-related time series from FRED
+
+Depending on the date range and local setup, the notebook may require internet access when data is refreshed directly from the source APIs.
+
+## Python Dependencies
+
+Recommended core packages:
 
 - `pandas`
 - `numpy`
@@ -68,8 +89,9 @@
 - `yfinance`
 - `fredapi`
 - `openpyxl`
+- `jupyter`
 
-예시 설치:
+Example installation:
 
 ```bash
 pip install pandas numpy matplotlib yfinance fredapi openpyxl jupyter
@@ -77,19 +99,34 @@ pip install pandas numpy matplotlib yfinance fredapi openpyxl jupyter
 
 ## How To Run
 
-1. 가상환경을 생성합니다.
-2. 필요한 패키지를 설치합니다.
-3. FRED API Key가 필요하면 환경변수 또는 노트북 설정 셀에 입력합니다.
-4. `credit-barbell-strategy.ipynb`를 열어 순서대로 실행합니다.
-5. 산출물은 `results/` 폴더 기준으로 관리합니다.
+1. Create and activate a Python environment.
+2. Install the required packages.
+3. Add your FRED API key if the notebook requires macro data downloads.
+4. Open `credit-barbell-strategy.ipynb`.
+5. Run the notebook from top to bottom in sequence.
+6. Save or refresh charts and report files under `results/`.
 
-## Upload Policy
+## What Is Included
 
-GitHub 업로드 시 원칙은 아래와 같습니다.
+This repository is intentionally scoped to the final deliverable set:
 
-- 루트에는 최종 노트북과 설명 문서만 유지
-- 결과 이미지는 `results/figures/`로 분리
-- 결과 엑셀은 `results/reports/`로 분리
-- 초안 노트북, 참고 PDF, 중간 실험 파일은 업로드 대상에서 제외
+- one final notebook
+- exported figures used for documentation
+- report spreadsheets used for result review
+- a concise folder structure suitable for GitHub sharing
 
-즉, 이 저장소는 발표 및 공유용 최종 결과물 저장소로 유지합니다.
+## What Is Excluded
+
+The following are intentionally not part of the GitHub-facing repository structure:
+
+- draft notebooks
+- intermediate experimental files
+- reference PDFs
+- local environment files
+
+These are kept locally in ignored folders such as `archive/` and `references/`.
+
+## Notes
+
+- This repository is separate from the `regime-detection` project.
+- The goal here is not to preserve every research iteration, but to present the final credit barbell strategy in a clean and readable form.
